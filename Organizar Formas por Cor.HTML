@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Organizar Cores</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #e6e6e6;
+}
+
+h1 { margin-top: 15px; }
+
+.area {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.caixa {
+    width: 180px;
+    height: 100px;
+    border: 3px solid #333;
+    background: #c69c6d;
+    position: relative;
+}
+
+.etiqueta {
+    width: 50px;
+    height: 30px;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+.formas { margin-top: 30px; }
+
+.forma {
+    width: 60px;
+    height: 60px;
+    margin: 10px;
+    display: inline-block;
+    cursor: grab;
+}
+
+/* FORMAS */
+.circulo { border-radius: 50%; }
+.quadrado {}
+.triangulo {
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 60px solid;
+    background: none !important;
+}
+
+/* CORES */
+.vermelho { background: red; border-bottom-color: red; }
+.azul { background: blue; border-bottom-color: blue; }
+.verde { background: green; border-bottom-color: green; }
+.amarelo { background: gold; border-bottom-color: gold; }
+
+button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* BOTÃO ENVIAR */
+.enviar {
+    background: orange;
+    font-weight: bold;
+}
+
+/* TELA RESULTADO */
+.resultado {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.resultado-box {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+}
+
+.pontos {
+    font-size: 60px;
+    color: orange;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎨 ORGANIZE AS CORES</h1>
+<p>Arraste as formas para a caixa correta.</p>
+
+<div class="area">
+    <div class="caixa" data-cor="vermelho" ondrop="soltar(event)" ondragover="permitir(event)">
+        <div class="etiqueta vermelho"></div>
+    </div>
+
+    <div class="caixa" data-cor="azul" ondrop="soltar(event)" ondragover="permitir(event)">
+        <div class="etiqueta azul"></div>
+    </div>
+
+    <div class="caixa" data-cor="verde" ondrop="soltar(event)" ondragover="permitir(event)">
+        <div class="etiqueta verde"></div>
+    </div>
+
+    <div class="caixa" data-cor="amarelo" ondrop="soltar(event)" ondragover="permitir(event)">
+        <div class="etiqueta amarelo"></div>
+    </div>
+</div>
+
+<div class="formas" id="formas">
+
+<!-- 10 ITENS -->
+<div id="f1" class="forma circulo vermelho" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f2" class="forma quadrado azul" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f3" class="forma circulo verde" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f4" class="forma quadrado amarelo" draggable="true" ondragstart="arrastar(event)"></div>
+
+<div id="f5" class="forma triangulo vermelho" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f6" class="forma triangulo azul" draggable="true" ondragstart="arrastar(event)"></div>
+
+<div id="f7" class="forma quadrado verde" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f8" class="forma circulo amarelo" draggable="true" ondragstart="arrastar(event)"></div>
+
+<div id="f9" class="forma quadrado vermelho" draggable="true" ondragstart="arrastar(event)"></div>
+<div id="f10" class="forma circulo azul" draggable="true" ondragstart="arrastar(event)"></div>
+
+</div>
+
+<button class="enviar" onclick="conferir()">ENVIAR</button>
+
+<!-- TELA RESULTADO -->
+<div class="resultado" id="resultado">
+    <div class="resultado-box">
+        <h2>SUA PONTUAÇÃO</h2>
+        <div class="pontos" id="pontos">0</div>
+        <button onclick="reiniciar()">JOGAR NOVAMENTE</button>
+    </div>
+</div>
+
+<script>
+function permitir(ev){ ev.preventDefault(); }
+
+function arrastar(ev){
+    ev.dataTransfer.setData("id", ev.target.id);
+}
+
+function soltar(ev){
+    ev.preventDefault();
+    const id = ev.dataTransfer.getData("id");
+    const item = document.getElementById(id);
+    ev.currentTarget.appendChild(item);
+}
+
+function conferir(){
+    let acertos = 0;
+    document.querySelectorAll(".caixa").forEach(caixa=>{
+        const corCaixa = caixa.dataset.cor;
+        caixa.querySelectorAll(".forma").forEach(forma=>{
+            if(forma.classList.contains(corCaixa)) acertos++;
+        });
+    });
+
+    document.getElementById("pontos").innerText = acertos + " / 10";
+    document.getElementById("resultado").style.display = "flex";
+}
+
+function reiniciar(){
+    const area = document.getElementById("formas");
+    document.querySelectorAll(".forma").forEach(f=>area.appendChild(f));
+    embaralhar();
+    document.getElementById("resultado").style.display = "none";
+}
+
+function embaralhar(){
+    const area = document.getElementById("formas");
+    [...area.children].sort(()=>Math.random()-0.5)
+    .forEach(el=>area.appendChild(el));
+}
+
+window.onload = embaralhar;
+</script>
+
+</body>
+</html>
